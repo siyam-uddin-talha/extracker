@@ -4,7 +4,7 @@ Built with Python’s Flet framework, this app enables quick, easy extraction of
 
 ## Download and install
 
-https://sutio-apps.s3.ap-southeast-1.amazonaws.com/extracker/Extracker_setup.exe
+https://sutio-apps.s3.ap-southeast-1.amazonaws.com/extracker/extracker_setup.exe
 
 ## 🔧 Installation
 
