@@ -6,27 +6,58 @@ Built with Python’s Flet framework, this app enables quick, easy extraction of
 
 https://sutio-apps.s3.ap-southeast-1.amazonaws.com/extracker/Extracker_setup.exe
 
-## Installation
+## 🔧 Installation
 
-Install zip from github download
+### Option 1: Windows Installer
 
-## or
+Download and run the setup file:
 
 ```bash
 $ git clone https://github.com/siyam-uddin-talha/extracker.git
-$ pip install -r requirements.txt
-$ python main.py
-$ **Or** flet run main.py
 
 ```
 
-## Features
+### Option 2: From Source
 
-- Fullscreen mode
-- Cross platform
-- Audio To MP4 or Audio To MP3
-- Video To MP4 or Video To MP3
+```bash
+# Clone the repository
+git clone https://github.com/siyam-uddin-talha/extracker.git
 
-## Tech Stack
+# Navigate to project directory
+cd extracker
 
-**Python:** Flet, ffmpeg
+# Install dependencies
+pip install -r requirements.txt
+
+# Run the application
+python main.py
+# OR
+flet run main.py
+
+```
+
+## 🚀 Features
+
+- **Audio Extraction**: Extract high-quality audio from video files
+- **Video Conversion**: Convert audio files to video format
+- **Multiple Format Support**:
+  - Input: MP4, AVI, MKV, MOV
+  - Output: MP3, MP4
+- **User-Friendly Interface**: Clean and intuitive design
+- **Cross-Platform**: Works on Windows, macOS, and Linux
+- **Batch Processing**: Convert multiple files simultaneously
+- **Custom Output Settings**: Control quality and format parameters
+- **Fullscreen Mode**: Enhanced viewing experience
+
+📋 Prerequisites
+
+- Python 3.8 or higher
+- FFmpeg
+- Internet connection (for initial setup)
+
+🛠️ Tech Stack
+
+- Frontend Framework: Flet
+- Core Processing: FFmpeg
+- Language: Python 3
+- Package Management: pip
