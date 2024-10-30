@@ -1,3 +1,7 @@
+import os
+import platform
+import subprocess
+
 import flet as ft
 import ffmpeg
 
@@ -82,9 +86,21 @@ def main(page: ft.Page):
         dirName, ex = path.split(fileName)
 
         if selected_type.value.lower() == "mp4":
-            convert_to_mp4(path, f"{dirName}{fileName}.mp4")
+            main_section.controls.append(
+                ft.ProgressBar(color="#a616fb", bgcolor="#e58969", border_radius=4)
+            )
+            page.update()
+            convert_to_mp4(path, f"{dirName}{fileName}_extracker.mp4")
+            main_section.controls.pop()
+            page.update()
         if selected_type.value.lower() == "mp3":
-            convert_to_mp3(path, f"{dirName}{fileName}.mp3")
+            main_section.controls.append(
+                ft.ProgressBar(color="#a616fb", bgcolor="#e58969", border_radius=4)
+            )
+            page.update()
+            convert_to_mp3(path, f"{dirName}{fileName}_extracker.mp3")
+            main_section.controls.pop()
+            page.update()
 
     def handleFilePick(e: ft.FilePickerResultEvent):
         if e.files:
@@ -120,6 +136,7 @@ def main(page: ft.Page):
                         ],
                         alignment=ft.MainAxisAlignment.END,
                     )
+
                     if len(main_section.controls) > 1:
                         main_section.controls.pop(1)
                     main_section.controls.append(
@@ -149,6 +166,13 @@ def main(page: ft.Page):
                                 value="mp4",
                                 on_change=radiogroup_changed,
                             ),
+                            ft.FilledButton(
+                                "Open",
+                                on_click=lambda _: file_picker.pick_files(
+                                    allowed_extensions=ALLOW_EXTENSTIONS
+                                ),
+                                icon=ft.icons.ADD,
+                            ),
                             ft.ElevatedButton(
                                 "Export",
                                 on_click=lambda _: handle_export(
@@ -162,6 +186,8 @@ def main(page: ft.Page):
                     #     singleFile.path,
                     # ).output(f"{singleFile.name}.png", vframes=1).run()
 
+                    if len(main_section.controls) > 1:
+                        main_section.controls.pop(1)
                     main_section.controls.append(
                         ft.Container(
                             content=ft.Video(
@@ -220,10 +246,10 @@ def main(page: ft.Page):
 
 def convert_to_mp4(path: str, output: str):
     try:
-
         stream = ffmpeg.input(path).output(output, codec="copy")
         ffmpeg.run(stream, overwrite_output=True, quiet=True)
-    except Exception as e:
+        open_file_explorer(path, output)
+    except ffmpeg.Error as e:
         print(e)
 
 
@@ -233,8 +259,61 @@ def convert_to_mp3(path: str, output: str):
         # Run the ffmpeg conversion
         stream = ffmpeg.input(path).output(output, format="mp3", audio_bitrate="192k")
         ffmpeg.run(stream, overwrite_output=True, quiet=True)
-    except Exception as e:
+        open_file_explorer(path, output)
+    except ffmpeg.Error as e:
         print(f"Error during conversion: {e}")
+
+
+def open_file_explorer(dir, fileName):
+    # home_dir = os.path.expanduser("~")
+
+    downloads_dir = os.path.join(dir, fileName)
+
+    abs_path = os.path.abspath(os.path.expanduser(downloads_dir))
+
+    # Check if path exists
+    if not os.path.exists(abs_path):
+        raise FileNotFoundError(f"Path does not exist: {abs_path}")
+
+    # Detect the operating system
+    system = platform.system().lower()
+
+    try:
+        # macOS
+        if system == "darwin":
+            subprocess.run(["open", abs_path])
+
+        # Windows
+        elif system == "windows":
+            subprocess.run(["explorer", abs_path])
+
+        # Linux (will try common file managers)
+        elif system == "linux":
+            # List of common Linux file managers
+            file_managers = [
+                ["xdg-open", abs_path],  # Generic open command
+                ["nautilus", abs_path],  # GNOME
+                ["dolphin", abs_path],  # KDE
+                ["nemo", abs_path],  # Cinnamon
+                ["thunar", abs_path],  # XFCE
+                ["pcmanfm", abs_path],  # LXDE
+            ]
+
+            # Try each file manager until one works
+            for fm_command in file_managers:
+                try:
+                    subprocess.run(fm_command)
+                    break
+                except FileNotFoundError:
+                    continue
+            else:
+                raise FileNotFoundError("No supported file manager found")
+
+        return True
+
+    except Exception as e:
+        print(f"Error opening file explorer: {str(e)}")
+        return False
 
 
 ft.app(main)
